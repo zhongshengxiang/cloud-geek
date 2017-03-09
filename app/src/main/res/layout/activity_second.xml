@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.example.myapplication.widgets.RedLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/red"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white">
+    <com.example.myapplication.widgets.GreenLayout
+        android:id="@+id/green"
+        android:layout_width="260dp"
+        android:layout_height="400dp"
+        android:layout_centerInParent="true"
+        android:background="@android:color/holo_green_light">
+        <com.example.myapplication.widgets.MyView
+            android:id="@+id/view"
+            android:layout_width="100dp"
+            android:layout_height="200dp"
+            android:layout_centerInParent="true"
+            android:background="@android:color/darker_gray"/>
+    </com.example.myapplication.widgets.GreenLayout>
+
+</com.example.myapplication.widgets.RedLayout>
