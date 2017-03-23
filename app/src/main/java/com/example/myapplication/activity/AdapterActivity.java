@@ -27,7 +27,7 @@ import rx.Subscription;
 public class AdapterActivity extends BaseActivity {
     @BindView(R.id.recyclerView) RecyclerViewFinal mRecyclerView;
     @BindView(R.id.btn) Button mButton;
-    private BaseQuickAdapter<Student> adapter;
+    private BaseQuickAdapter<Student,BaseViewHolder> adapter;
     int mCurrentCounter;
 
     @Override
@@ -38,7 +38,7 @@ public class AdapterActivity extends BaseActivity {
     @Override
     public void initView() {
 
-        adapter = new BaseQuickAdapter<Student>(R.layout.item_student, null) {
+        adapter = new BaseQuickAdapter<Student,BaseViewHolder>(R.layout.item_student, null) {
             View.OnClickListener ocl;
 
             @Override

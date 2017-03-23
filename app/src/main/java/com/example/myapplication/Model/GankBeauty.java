@@ -2,7 +2,13 @@
 
 package com.example.myapplication.Model;
 
-public class GankBeauty {
+import com.chad.library.adapter.base.entity.SectionEntity;
+
+public class GankBeauty extends SectionEntity{
     public String createdAt;
     public String url;
+
+    public GankBeauty(Object o) {
+        super(o);
+    }
 }

@@ -3,7 +3,6 @@ package com.example.myapplication.appconfig;
 import android.content.Context;
 import android.os.Environment;
 
-import com.blankj.utilcode.utils.FileUtils;
 
 import java.io.File;
 
@@ -119,11 +118,12 @@ public class DataCleanManager {
             } else {
                 // 判断是否为文件
                 if (file.isFile()) {  // 为文件时调用删除文件方法
-                    return FileUtils.deleteFile(file);
+//                    return FileUtils.deleteFile(file);
                 } else {  // 为目录时调用删除目录方法
-                    return FileUtils.deleteDir(file);
+//                    return FileUtils.deleteDir(file);
                 }
             }
+            return true;
         }
 
     }

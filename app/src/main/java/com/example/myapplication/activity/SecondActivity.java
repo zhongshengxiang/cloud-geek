@@ -8,7 +8,6 @@ import android.widget.Toast;
 
 import com.example.myapplication.R;
 import com.example.myapplication.widgets.GreenLayout;
-import com.example.myapplication.widgets.MyFloatView;
 import com.example.myapplication.widgets.MyView;
 import com.example.myapplication.widgets.RedLayout;
 
@@ -37,7 +36,7 @@ public class SecondActivity extends Activity {
                 Log.i(tag,"灰色");
             }
         });
-        MyFloatView.getInstance(this);
+
     }
 
     @OnClick({R.id.view, R.id.green, R.id.red})

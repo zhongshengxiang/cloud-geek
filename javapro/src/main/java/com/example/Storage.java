@@ -1,14 +1,14 @@
 package com.example;
 
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * Created by Administrator on 2017/2/4.
  */
 
 public class Storage {
-    BlockingQueue<Product> mQueue = new SynchronousQueue<>();
+    private BlockingQueue<Product> mQueue = new LinkedBlockingQueue<>(2);
 
     public void input(Product product) throws InterruptedException {
         mQueue.put(product);

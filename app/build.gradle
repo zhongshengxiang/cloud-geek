@@ -1,7 +1,7 @@
 apply plugin: 'com.android.application'
 apply plugin: 'com.neenbedankt.android-apt'
 
-def releaseTime() {
+static def releaseTime() {
     return new Date().format("yyyy-MM-dd", TimeZone.getTimeZone("UTC"))
 }
 
@@ -14,7 +14,7 @@ allprojects {
 
 android {
     compileSdkVersion 25
-    buildToolsVersion "24.0.2"
+    buildToolsVersion '25.0.0'
 
     defaultConfig {
         applicationId "com.example.myapplication"
@@ -71,16 +71,9 @@ android {
     }
 }
 
-//repositories {
-//    flatDir { dirs 'libs' }
-//}
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    testCompile 'junit:junit:4.12'
-    debugCompile 'com.squareup.leakcanary:leakcanary-android:1.4-beta2'
-    releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta2'
-//    /compile files('libs/tbs_sdk_thirdapp_v2.3.0.1048_36801_sharewithdownload_obfs_20160829_200437.jar')
     compile(name: 'Multi-release', ext: 'aar')
     compile(name: 'loading-more-view-release', ext: 'aar')
     compile 'com.android.support:appcompat-v7:25.1.0'
@@ -88,7 +81,6 @@ dependencies {
     compile 'com.android.support:recyclerview-v7:25.1.0'
     compile 'com.android.support:support-v4:25.1.0'
     compile 'com.jakewharton:butterknife:8.5.1'
-    apt 'com.jakewharton:butterknife-compiler:8.5.1'
     compile 'com.squareup.retrofit2:retrofit:2.1.0'
     compile 'com.jakewharton.rxbinding:rxbinding:0.4.0'
     compile 'io.reactivex:rxjava:1.1.6'
@@ -99,19 +91,15 @@ dependencies {
     compile 'com.squareup.retrofit2:adapter-rxjava:2.0.2'
     compile 'com.trello:rxlifecycle:0.8.0'
     compile 'com.trello:rxlifecycle-components:0.8.0'
-    compile 'com.google.code.gson:gson:2.6.1'
+    compile 'com.google.code.gson:gson:2.7'
+    compile 'com.blankj:utilcode:1.3.6'
     compile 'cn.pedant.sweetalert:library:1.3'
     compile 'cn.finalteam:galleryfinal:1.4.8.7'
     compile 'com.github.bumptech.glide:glide:3.7.0'
     compile 'com.liulishuo.filedownloader:library:1.0.0'
-    compile 'com.github.CymChad:BaseRecyclerViewAdapterHelper:v1.9.7'
-    //https://github.com/CymChad/BaseRecyclerViewAdapterHelper/blob/master/README-cn.md
-    compile 'org.litepal.android:core:1.4.0'//本地数据库https://github.com/LitePalFramework/LitePal
-    compile 'com.blankj:utilcode:1.3.4'
-//https://github.com/Blankj/AndroidUtilCode/blob/master/README-CN.md
-//    compile 'com.zhy:autolayout:1.4.5'  https://github.com/hongyangAndroid/AndroidAutoLayout
-//    https://github.com/shaohui10086/ShareUtil   分享
-    compile 'com.google.android.gms:play-services-appindexing:9.4.0'
-//    compile 'com.ashokvarma.android:bottom-navigation-bar:1.3.0'
+    compile 'com.github.CymChad:BaseRecyclerViewAdapterHelper:2.8.6'
+    testCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5'
+    apt 'com.jakewharton:butterknife-compiler:8.5.1'
+    debugCompile 'com.squareup.leakcanary:leakcanary-android:1.5'
+    releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5'
 }
-//https://github.com/gzu-liyujiang/AndroidPicker

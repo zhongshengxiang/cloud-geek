@@ -1,30 +1,38 @@
 package com.example.myapplication.appconfig;
 
+import android.app.Activity;
+import android.app.Application;
 import android.content.Context;
+import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
+import com.blankj.utilcode.utils.Utils;
 import com.liulishuo.filedownloader.FileDownloader;
 import com.squareup.leakcanary.LeakCanary;
-import com.squareup.leakcanary.RefWatcher;
-
-import org.litepal.LitePalApplication;
 
 import cn.finalteam.galleryfinal.FunctionConfig;
 
 /**
  * Created by Vinctor on 16/4/18.
  */
-public class MyApplication extends LitePalApplication implements PreferenceManager.OnActivityDestroyListener{
+public class MyApplication extends Application implements PreferenceManager.OnActivityDestroyListener {
 
     public static Context appContext;
-    private static RefWatcher refWatcher;
+    int count;
 
     @Override
     public void onCreate() {
         super.onCreate();
         appContext = this;
-        refWatcher = LeakCanary.install(this);
+        if (LeakCanary.isInAnalyzerProcess(this)) {
+            // This process is dedicated to LeakCanary for heap analysis.
+            // You should not init your app in this process.
+            return;
+        }
+        LeakCanary.install(this);
         FileDownloader.init(this);
+        Utils.init(this);
         init();
     }
 
@@ -32,14 +40,58 @@ public class MyApplication extends LitePalApplication implements PreferenceManag
         return appContext;
     }
 
-    public static RefWatcher getRefWatcher() {
-        return refWatcher;
-    }
-
     private void init() {
 //        initMultiPhotoPicker();
+        registerActivityLifecycleCallbacks(new ActivityLifecycleCallbacks() {
+            @Override
+            public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
+
+            }
+
+            @Override
+            public void onActivityStarted(Activity activity) {
+                if (count==0){
+                    SDKManager.init().showFloat();
+                    Log.i("okhttp", "显示");
+                }
+                count++;
+            }
+
+            @Override
+            public void onActivityResumed(Activity activity) {
+
+            }
+
+            @Override
+            public void onActivityPaused(Activity activity) {
+
+            }
+
+            @Override
+            public void onActivityStopped(Activity activity) {
+                count--;
+                if (count == 0) {
+                    SDKManager.init().hideFloat();
+                    Log.i("okhttp", "隐藏");
+                }
+            }
+
+            @Override
+            public void onActivitySaveInstanceState(Activity activity, Bundle outState) {
+
+            }
+
+            @Override
+            public void onActivityDestroyed(Activity activity) {
+
+            }
+        });
     }
 
+    @Override
+    public void onTrimMemory(int level) {
+        super.onTrimMemory(level);
+    }
 
 //    private void initMultiPhotoPicker() {
 //        //配置主题

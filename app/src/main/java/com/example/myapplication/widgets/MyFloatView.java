@@ -6,6 +6,7 @@ import android.content.Context;
 import android.graphics.PixelFormat;
 import android.graphics.Rect;
 import android.os.Handler;
+import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
@@ -14,17 +15,14 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.myapplication.R;
-
+import com.example.myapplication.utils.Toaster;
 /**
  * Created by user on 2016/9/13.
  */
-public class MyFloatView implements View.OnClickListener {
+public class MyFloatView extends RelativeLayout implements View.OnClickListener {
 
-    private static MyFloatView instance = null;
-    private static Context mContext;
     private ImageView iv_gift_selected;
     private ImageView iv_leida_selected;
     private ImageView iv_msg_selected;
@@ -41,16 +39,29 @@ public class MyFloatView implements View.OnClickListener {
 
     private FrameLayout[] FLS;
     private float angle = 0;// 旋转的角度
-    private static WindowManager.LayoutParams wmParams;
-    private static Handler handler = new Handler();
-    private static int time;
-    private MyRunnable runnable = MyRunnable.bulid();
+    private WindowManager.LayoutParams wmParams;
+    private Handler handler = new Handler();
+    private int time;
+    private MyRunnable runnable = new MyRunnable();
     // 创建浮动窗口设置布局参数的对象
-    private static WindowManager mWindowManager;
-    private static RelativeLayout mFloatLayout;
-    private int mWidth;// 自身的宽度
+    private WindowManager mWindowManager;
+//    private int mWidth;// 自身的宽度
     private int width;// 屏幕的宽度
-    class MyListener implements Animator.AnimatorListener {
+
+    public MyFloatView(Context context) {
+        this(context, null, 0);
+    }
+
+    public MyFloatView(Context context, AttributeSet attrs) {
+        this(context, attrs, 0);
+    }
+
+    public MyFloatView(Context context, AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
+        createFloatView(context);
+    }
+
+    private class MyListener implements Animator.AnimatorListener {
         String mcontent;
 
         public void setContent(String content) {
@@ -64,7 +75,7 @@ public class MyFloatView implements View.OnClickListener {
 
         @Override
         public void onAnimationEnd(Animator animator) {
-            Toast.makeText(mContext,mcontent,Toast.LENGTH_SHORT).show();
+            Toaster.show(mcontent);
         }
 
         @Override
@@ -78,26 +89,10 @@ public class MyFloatView implements View.OnClickListener {
         }
     }
 
-    private MyFloatView(Context context) {
-        init(context.getApplicationContext());
-    }
-
-    protected void init(Context context) {
-        this.mContext = context;
-        createFloatView();
-    }
-
-    public synchronized static MyFloatView getInstance(Context context) {
-        if (instance == null) {
-            instance = new MyFloatView(context);
-        }
-        return instance;
-    }
-
-    private void createFloatView() {
+    private void createFloatView(Context context) {
         wmParams = new WindowManager.LayoutParams(WindowManager.LayoutParams.TYPE_SYSTEM_ERROR, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
         // 获取的是WindowManagerImpl.CompatModeWrapper
-        mWindowManager = (WindowManager) mContext.getSystemService(mContext.WINDOW_SERVICE);
+        mWindowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         width = mWindowManager.getDefaultDisplay().getWidth();// 屏幕的宽度
         // 设置图片格式，效果为背景透明
         wmParams.format = PixelFormat.RGBA_8888;
@@ -107,7 +102,7 @@ public class MyFloatView implements View.OnClickListener {
         wmParams.type = getAPIVersion() >= 19 ? WindowManager.LayoutParams.TYPE_TOAST : WindowManager.LayoutParams.TYPE_PHONE;
 
         // 调整悬浮窗显示的停靠位置为左侧置顶
-        wmParams.gravity = Gravity.LEFT | Gravity.TOP;
+        wmParams.gravity = Gravity.START | Gravity.TOP;
         // 以屏幕左上角为原点，设置x、y初始值，相对于gravity
         wmParams.x = 0;
         wmParams.y = 0;
@@ -116,14 +111,14 @@ public class MyFloatView implements View.OnClickListener {
         wmParams.width = WindowManager.LayoutParams.WRAP_CONTENT;
         wmParams.height = WindowManager.LayoutParams.WRAP_CONTENT;
 
-        mFloatLayout = (RelativeLayout) View.inflate(mContext, R.layout.sdk_suspensionmenu_main, null);
+        View.inflate(context, R.layout.sdk_suspensionmenu_main, this);
 
         Rect frame = new Rect();
-        mFloatLayout.getWindowVisibleDisplayFrame(frame);
+        getWindowVisibleDisplayFrame(frame);
         statusBarHeight = frame.top;
         // 添加mFloatLayout
 
-        mWindowManager.addView(mFloatLayout, wmParams);
+        mWindowManager.addView(this, wmParams);
         init();
     }
 
@@ -139,24 +134,24 @@ public class MyFloatView implements View.OnClickListener {
 
     private void init() {
 
-        iv_gift_selected = (ImageView) mFloatLayout.findViewById(R.id.iv_gift_selected);
-        iv_leida_selected = (ImageView) mFloatLayout.findViewById(R.id.iv_leida_selected);
-        iv_msg_selected = (ImageView) mFloatLayout.findViewById(R.id.iv_msg_selected);
-        iv_center_inner = (ImageView) mFloatLayout.findViewById(R.id.iv_center_inner);
-        iv_center_inner2 = (ImageView) mFloatLayout.findViewById(R.id.iv_center_inner2);
-        iv_left_inner = (ImageView) mFloatLayout.findViewById(R.id.iv_left_inner);
-        iv_right_inner = (ImageView) mFloatLayout.findViewById(R.id.iv_right_inner);
-        iv_question_selected = (ImageView) mFloatLayout.findViewById(R.id.iv_question_selected);
-        fl_inner = (FrameLayout) mFloatLayout.findViewById(R.id.fl_inner);
-        tv_hint = (TextView) mFloatLayout.findViewById(R.id.tv_hint);
-        iv_user_selected = (ImageView) mFloatLayout.findViewById(R.id.iv_user_selected);
+        iv_gift_selected = (ImageView) findViewById(R.id.iv_gift_selected);
+        iv_leida_selected = (ImageView) findViewById(R.id.iv_leida_selected);
+        iv_msg_selected = (ImageView) findViewById(R.id.iv_msg_selected);
+        iv_center_inner = (ImageView) findViewById(R.id.iv_center_inner);
+        iv_center_inner2 = (ImageView) findViewById(R.id.iv_center_inner2);
+        iv_left_inner = (ImageView) findViewById(R.id.iv_left_inner);
+        iv_right_inner = (ImageView) findViewById(R.id.iv_right_inner);
+        iv_question_selected = (ImageView) findViewById(R.id.iv_question_selected);
+        FrameLayout fl_inner = (FrameLayout) findViewById(R.id.fl_inner);
+        tv_hint = (TextView) findViewById(R.id.tv_hint);
+        iv_user_selected = (ImageView) findViewById(R.id.iv_user_selected);
 
-        fl_leida = (FrameLayout) mFloatLayout.findViewById(R.id.fl_leida);
-        fl_gift = (FrameLayout) mFloatLayout.findViewById(R.id.fl_gift);
-        fl_msg = (FrameLayout) mFloatLayout.findViewById(R.id.fl_msg);
-        fl_question = (FrameLayout) mFloatLayout.findViewById(R.id.fl_question);
-        fl_user = (FrameLayout) mFloatLayout.findViewById(R.id.fl_user);
-        rl_fl = (RelativeLayout) mFloatLayout.findViewById(R.id.rl_fl);
+        fl_leida = (FrameLayout) findViewById(R.id.fl_leida);
+        fl_gift = (FrameLayout) findViewById(R.id.fl_gift);
+        fl_msg = (FrameLayout) findViewById(R.id.fl_msg);
+        fl_question = (FrameLayout) findViewById(R.id.fl_question);
+        fl_user = (FrameLayout) findViewById(R.id.fl_user);
+        rl_fl = (RelativeLayout) findViewById(R.id.rl_fl);
         FLS = new FrameLayout[]{fl_gift, fl_msg, fl_user, fl_question, fl_leida};
         iVS = new ImageView[]{iv_gift_selected, iv_msg_selected, iv_user_selected, iv_question_selected, iv_leida_selected};
         fl_inner.setOnTouchListener(otl);
@@ -177,7 +172,7 @@ public class MyFloatView implements View.OnClickListener {
         public boolean onTouch(View v, MotionEvent event) {
             handler.removeCallbacks(runnable);
             time = 0;
-            mWidth = mFloatLayout.getMeasuredWidth();// 自己的宽度
+            int mWidth = MyFloatView.this.getMeasuredWidth();// 自己的宽度
             // getRawX是触摸位置相对于屏幕的坐标，getX是相对于按钮的坐标
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN:
@@ -193,8 +188,8 @@ public class MyFloatView implements View.OnClickListener {
                 case MotionEvent.ACTION_MOVE:
                     wmParams.x = (int) event.getRawX() - mWidth * 2 / 3;
                     // 减statusBarHeight为状态栏的高度
-                    wmParams.y = (int) event.getRawY() - mFloatLayout.getMeasuredHeight() * 2 / 3 - statusBarHeight;
-                    mWindowManager.updateViewLayout(mFloatLayout, wmParams);
+                    wmParams.y = (int) event.getRawY() - MyFloatView.this.getMeasuredHeight() * 2 / 3 - statusBarHeight;
+                    mWindowManager.updateViewLayout(MyFloatView.this, wmParams);
                     break;
                 case MotionEvent.ACTION_UP:
                     int endx = (int) event.getRawX();
@@ -212,7 +207,7 @@ public class MyFloatView implements View.OnClickListener {
                         isRight = true;
                     }
                     hide();
-                    mWindowManager.updateViewLayout(mFloatLayout, wmParams);
+                    mWindowManager.updateViewLayout(MyFloatView.this, wmParams);
 
                     break;
 
@@ -230,28 +225,15 @@ public class MyFloatView implements View.OnClickListener {
         handler.postDelayed(runnable, 1000);
     }
 
-    private static FrameLayout fl_inner;
     private ImageView[] iVS;
     private TextView tv_hint;
-    private static ImageView iv_center_inner;
-    private static ImageView iv_center_inner2;
+    private ImageView iv_center_inner;
+    private ImageView iv_center_inner2;
     private RelativeLayout rl_fl;
-    private static ImageView iv_left_inner;
-    private static ImageView iv_right_inner;
+    private ImageView iv_left_inner;
+    private ImageView iv_right_inner;
 
-    private static class MyRunnable implements Runnable {
-        static MyRunnable myRunnable = null;
-
-        private MyRunnable() {
-            super();
-        }
-
-        public synchronized static MyRunnable bulid() {
-            if (myRunnable == null) {
-                myRunnable = new MyRunnable();
-            }
-            return myRunnable;
-        }
+    private class MyRunnable implements Runnable {
 
         @Override
         public void run() {
@@ -285,7 +267,7 @@ public class MyFloatView implements View.OnClickListener {
     @Override
     public void onClick(View v) {
         ObjectAnimator oaY;
-        MyListener listener=new MyListener();
+        MyListener listener = new MyListener();
         if (v.getId() == fl_msg.getId()) {
             initSelected(iv_msg_selected);
             Float toDegrees1 = Math.abs(-72f - angle) < Math.abs(288f - angle) ? -72f : 288f;
@@ -357,8 +339,8 @@ public class MyFloatView implements View.OnClickListener {
      * 控制被选中按钮的圈圈
      */
     private void initSelected(ImageView iv) {
-        for (int i = 0; i < iVS.length; i++) {
-            iVS[i].setVisibility(View.GONE);
+        for (ImageView iV : iVS) {
+            iV.setVisibility(View.GONE);
             iv.setVisibility(View.VISIBLE);
         }
     }
@@ -374,58 +356,47 @@ public class MyFloatView implements View.OnClickListener {
             iv_center_inner.setVisibility(View.GONE);
             rl_fl.setVisibility(View.GONE);
             tv_hint.setVisibility(View.GONE);
-            for (int i = 0; i < FLS.length; i++) {
-                FLS[i].setVisibility(View.GONE);
+            for (FrameLayout FL : FLS) {
+                FL.setVisibility(View.GONE);
             }
-            ObjectAnimator.ofFloat(mFloatLayout, "scale", 1.0F, 0.0F).setDuration(300).start();
+            ObjectAnimator.ofFloat(this, "scale", 1.0F, 0.0F).setDuration(300).start();
             isBig = false;
         } else {
             iv_center_inner2.setVisibility(View.GONE);
             iv_center_inner.setVisibility(View.VISIBLE);
             rl_fl.setVisibility(View.VISIBLE);
             tv_hint.setVisibility(View.VISIBLE);
-            for (int i = 0; i < FLS.length; i++) {
-                FLS[i].setVisibility(View.VISIBLE);
+            for (FrameLayout FL : FLS) {
+                FL.setVisibility(View.VISIBLE);
             }
-            ObjectAnimator.ofFloat(mFloatLayout, "scale", 0.0F, 1.0F).setDuration(300).start();
+            ObjectAnimator.ofFloat(this, "scale", 0.0F, 1.0F).setDuration(300).start();
             isBig = true;
         }
     }
 
 
     // 隐藏悬浮窗口
-    public static void hidFloat() {
-        if (null != mFloatLayout) {
-            mFloatLayout.setVisibility(View.GONE);
-        }
+    public void hidFloat() {
+        MyFloatView.this.setVisibility(View.GONE);
     }
 
     // 移除悬浮窗口
-    public static void removeFloat() {
-        if (mFloatLayout != null) {
-            mWindowManager.removeView(mFloatLayout);
-            isRight = false;
-            instance = null;
-        }
+    public void removeFloat() {
+        mWindowManager.removeView(MyFloatView.this);
+        isRight = false;
     }
 
     // 显示悬浮窗口
-    public static void ShowFloat() {
-        if (null != mFloatLayout) {
-            mFloatLayout.setVisibility(View.VISIBLE);
-        }
+    public void showFloat() {
+        setVisibility(View.VISIBLE);
     }
 
     // 显示或者隐藏悬浮窗口
-    public static void showOrHideFloat() {
-        if (null != mFloatLayout) {
-            if (mFloatLayout.getVisibility() == View.VISIBLE) {
-                mFloatLayout.setVisibility(View.GONE);
-            } else if (mFloatLayout.getVisibility() == View.GONE) {
-                mFloatLayout.setVisibility(View.VISIBLE);
-            }
+    public void showOrHideFloat() {
+        if (getVisibility() == View.VISIBLE) {
+            setVisibility(View.GONE);
+        } else if (getVisibility() == View.GONE) {
+            setVisibility(View.VISIBLE);
         }
     }
-
-
 }
