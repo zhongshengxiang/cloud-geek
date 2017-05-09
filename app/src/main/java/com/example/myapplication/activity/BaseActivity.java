@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
@@ -51,7 +52,7 @@ public abstract class BaseActivity extends RxAppCompatActivity {
         // 激活导航栏设置
         tintManager.setNavigationBarTintEnabled(true);
         // 设置一个颜色给系统栏
-        tintManager.setTintColor(getResources().getColor(R.color.color));
+        tintManager.setTintColor(ContextCompat.getColor(this, R.color.color));
     }
 
     @TargetApi(19)

@@ -1,22 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:orientation="horizontal">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="40dp">
+
+    <View
+        android:id="@+id/view"
+        android:layout_width="1dp"
+        android:layout_height="match_parent"
+        android:layout_centerHorizontal="true"
+        android:background="@android:color/black"/>
+
+    <View
+        android:id="@+id/view2"
+        android:layout_width="20dp"
+        android:layout_height="1dp"
+        android:layout_centerVertical="true"
+        android:layout_toEndOf="@id/view"
+        android:background="@android:color/holo_red_dark"/>
 
     <TextView
         android:id="@+id/name"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:gravity="center"
-        android:text="姓名"/>
-
-    <TextView
-        android:id="@+id/age"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:gravity="center"
-        android:text="年龄"/>
-</LinearLayout>
+        android:layout_centerVertical="true"
+        android:layout_toRightOf="@id/view2"
+        android:text="年龄"
+        android:textColor="@android:color/black"
+        android:textSize="12sp"/>
+</RelativeLayout>

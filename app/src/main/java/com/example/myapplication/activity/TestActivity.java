@@ -18,7 +18,6 @@ import com.chad.library.adapter.base.listener.OnItemChildClickListener;
 import com.example.myapplication.R;
 import com.example.myapplication.utils.Toaster;
 import com.example.myapplication.widgets.TitleItemDecoration;
-import com.example.myapplication.widgets.TitleView;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -35,7 +34,6 @@ import butterknife.BindView;
 public class TestActivity extends BaseActivity {
     @BindView(R.id.recyclerView) RecyclerView mRecyclerView;
     @BindView(R.id.btn) Button mBtn;
-    @BindView(R.id.title_bar) TitleView mTitleView;
 
     @Override
     public int getLayoutID() {
@@ -46,13 +44,7 @@ public class TestActivity extends BaseActivity {
 
     @Override
     public void initView() {
-        mTitleView.setRightImgClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toaster.show("7857");
-            }
-        });
-        mTitleView.setTitle("哈哈哈");
+
         mBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -75,8 +67,7 @@ public class TestActivity extends BaseActivity {
             @Override
             protected void convert(BaseViewHolder helper, String item) {
                 helper.setText(R.id.tv, "第" + helper.getLayoutPosition())
-                        .addOnClickListener(R.id.tv).addOnClickListener(R.id.tv1)
-                        .setText(R.id.tv1, "条目" + helper.getLayoutPosition());
+                        .addOnClickListener(R.id.tv);
             }
         };
         mRecyclerView.setAdapter(adapter);

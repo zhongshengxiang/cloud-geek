@@ -89,7 +89,7 @@ public class RetrofitFactory {
             Request request = chain.request();
 
             // 在这里统一配置请求头缓存策略以及响应头缓存策略
-            if (NetworkUtils.isOnline()) {
+            if (NetworkUtils.isAvailableByPing()) {
                 // 在有网的情况下CACHE_AGE_SEC秒内读缓存，大于CACHE_AGE_SEC秒后会重新请求数据
                 request = request.newBuilder().removeHeader("Pragma").removeHeader("Cache-Control").header("Cache-Control", "public, max-age=" + CACHE_AGE_SEC).build();
                 Response response = chain.proceed(request);

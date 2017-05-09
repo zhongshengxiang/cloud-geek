@@ -43,16 +43,16 @@ public class RxTransformerHelper {
                 return observable.doOnSubscribe(new Action0() {
                     @Override
                     public void call() {
-                        if (!NetworkUtils.isOnline()) throw new NoNetWorkConnectException();
+                        if (!NetworkUtils.isAvailableByPing())
+                            throw new NoNetWorkConnectException();
                     }
-                })
-                        .subscribeOn(Schedulers.newThread());
+                }).subscribeOn(Schedulers.newThread());
             }
         };
     }
 
     //加载进度doalog
-    public static <T> Observable.Transformer<T, T> showDIalog(final Activity context) {
+    public static <T> Observable.Transformer<T, T> showDialog(final Activity context) {
         return new Observable.Transformer<T, T>() {
             @Override
             public Observable<T> call(Observable<T> tObservable) {
@@ -61,8 +61,7 @@ public class RxTransformerHelper {
                     public void call() {
                         DialogUtil.getIntance().showProgressDialog(context, null);
                     }
-                })
-                        .subscribeOn(AndroidSchedulers.mainThread());
+                }).subscribeOn(AndroidSchedulers.mainThread());
             }
         };
     }
@@ -113,7 +112,7 @@ public class RxTransformerHelper {
                             @Override
                             public Observable<?> call(Throwable throwable) {
                                 if (throwable instanceof TokenOverdueException) {
-                                    Log.i("okhttp","handleTokenOverdue()");
+                                    Log.i("okhttp", "handleTokenOverdue()");
                                     //重新获取token
                                     return RetrofitFactory.createApi(MyService.class).getToken()
                                             .compose(RxTransformerHelper.<ResponseBean<Token>>applySchedulers())
@@ -147,8 +146,7 @@ public class RxTransformerHelper {
                 return listObservable.map(new Func1<List<T>, List<T>>() {
                     @Override
                     public List<T> call(List<T> ts) {
-                        if (ts == null) throw new NullListException();
-                        if (ts.size() == 0) throw new NullListException();
+                        if (ts == null || ts.size() == 0) throw new NullListException();
                         return ts;
                     }
                 });

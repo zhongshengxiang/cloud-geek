@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.zhy.autolayout.AutoFrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/img"
+        android:layout_width="290px"
+        android:layout_height="290px"
+        android:layout_gravity="left|bottom"
+        android:layout_marginRight="40px"
+        android:layout_marginTop="40px"/>
+
+    <ImageView
+        android:id="@+id/delete"
+        android:layout_width="80px"
+        android:layout_height="80px"
+        android:layout_gravity="right|top"
+        android:src="@drawable/delete_img"/>
+
+</com.zhy.autolayout.AutoFrameLayout>

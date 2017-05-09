@@ -13,9 +13,7 @@ import com.squareup.leakcanary.LeakCanary;
 
 import cn.finalteam.galleryfinal.FunctionConfig;
 
-/**
- * Created by Vinctor on 16/4/18.
- */
+
 public class MyApplication extends Application implements PreferenceManager.OnActivityDestroyListener {
 
     public static Context appContext;
@@ -24,16 +22,16 @@ public class MyApplication extends Application implements PreferenceManager.OnAc
     @Override
     public void onCreate() {
         super.onCreate();
-        appContext = this;
+        appContext = getApplicationContext();
         if (LeakCanary.isInAnalyzerProcess(this)) {
             // This process is dedicated to LeakCanary for heap analysis.
             // You should not init your app in this process.
             return;
         }
         LeakCanary.install(this);
-        FileDownloader.init(this);
+        FileDownloader.init(appContext);
         Utils.init(this);
-        init();
+//        init();
     }
 
     public static Context getIntance() {
@@ -88,10 +86,6 @@ public class MyApplication extends Application implements PreferenceManager.OnAc
         });
     }
 
-    @Override
-    public void onTrimMemory(int level) {
-        super.onTrimMemory(level);
-    }
 
 //    private void initMultiPhotoPicker() {
 //        //配置主题

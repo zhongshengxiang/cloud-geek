@@ -8,18 +8,16 @@ public class Toaster {
     private static Toast toast;
 
     public static void show(String msg) {
-        if (toast == null) {
-            toast = Toast.makeText(MyApplication.appContext, msg, Toast.LENGTH_SHORT);
-        } else {
-            toast.setText(msg);
-            toast.setDuration(Toast.LENGTH_SHORT);
-        }
-        toast.show();
+        showToast(msg, Toast.LENGTH_SHORT);
     }
 
     public static void showLong(String msg) {
+        showToast(msg, Toast.LENGTH_LONG);
+    }
+
+    private static void showToast(String msg, int duration) {
         if (toast == null) {
-            toast = Toast.makeText(MyApplication.appContext, msg, Toast.LENGTH_LONG);
+            toast = Toast.makeText(MyApplication.appContext, msg, duration);
         } else {
             toast.setText(msg);
             toast.setDuration(Toast.LENGTH_SHORT);
