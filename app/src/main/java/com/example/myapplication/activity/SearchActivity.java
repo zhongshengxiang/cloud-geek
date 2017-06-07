@@ -10,20 +10,20 @@ import android.widget.SearchView;
 import com.example.myapplication.Model.HomeBean;
 import com.example.myapplication.Model.ResponseBean;
 import com.example.myapplication.R;
-import com.example.myapplication.interfaces.MySafeSubscriber;
-import com.example.myapplication.interfaces.OnRetryAction;
+import com.example.myapplication.appconfig.RxTransformerHelper;
 import com.example.myapplication.utils.Toaster;
 import com.jakewharton.rxbinding.widget.RxSearchView;
 import com.jakewharton.rxbinding.widget.SearchViewQueryTextEvent;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import rx.Observable;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
 import rx.functions.Func1;
-import rx.schedulers.Schedulers;
 
 public class SearchActivity extends BaseActivity {
 
@@ -50,24 +50,27 @@ public class SearchActivity extends BaseActivity {
                         return service.searchSth(event.queryText().toString().trim());
                     }
                 })
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new MySafeSubscriber<ResponseBean<HomeBean>>() {
+                .compose(RxTransformerHelper.<ResponseBean<HomeBean>>applySchedulers(this))
+                .compose(RxTransformerHelper.<HomeBean>checkResponse())
+                .map(new Func1<HomeBean, List<HomeBean.ItemHomeBean>>() {
                     @Override
-                    public OnRetryAction getRetryAction() {
-                        return null;
+                    public List<HomeBean.ItemHomeBean> call(HomeBean homeBean) {
+                        return homeBean.items;
                     }
-
+                }).compose(RxTransformerHelper.<HomeBean.ItemHomeBean>checkListIsNull())
+                .subscribe(new Action1<List<HomeBean.ItemHomeBean>>() {
                     @Override
-                    public boolean onOtherError(Throwable e) {
-                        return false;
-                    }
-
-                    @Override
-                    public void onNext(ResponseBean<HomeBean> bean) {
-                        Toaster.show(bean.getResult().items.get(0).p_name);
+                    public void call(List<HomeBean.ItemHomeBean> bean) {
+                        Toaster.show(bean.get(0).p_name);
                     }
                 });
+//                .subscribe(new MySafeSubscriber<List<HomeBean.ItemHomeBean>>() {
+//
+//                    @Override
+//                    public void onNext(List<HomeBean.ItemHomeBean> bean) {
+//                        Toaster.show(bean.get(0).p_name);
+//                    }
+//                });
         addSubscription(subscribe);
     }
 
@@ -79,7 +82,7 @@ public class SearchActivity extends BaseActivity {
 
     @Override
     public void initView() {
-
+        init();
         mBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

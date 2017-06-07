@@ -36,7 +36,7 @@ public class RetrofitFactory {
                 }
                 Builder builder = new Builder();
                 httpClient.connectTimeout(Constants.networkTimeout, TimeUnit.SECONDS);
-                singleton = builder.baseUrl(Constants.baseUrl)
+                singleton = builder.baseUrl("http://www.52doubao.cn/")
                         .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
                         .addConverterFactory(ScalarsConverterFactory.create())
                         .addConverterFactory(GsonConverterFactory.create())

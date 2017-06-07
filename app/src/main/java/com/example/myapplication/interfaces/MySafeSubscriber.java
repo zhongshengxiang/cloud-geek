@@ -2,16 +2,16 @@ package com.example.myapplication.interfaces;
 
 import android.util.Log;
 
-import com.example.myapplication.exception.NullListException;
-import com.example.myapplication.exception.ResponseErrorException;
 import com.example.myapplication.utils.DialogUtil;
 import com.example.myapplication.utils.Toaster;
+import com.example.mylibrary.exception.NullListException;
+import com.example.mylibrary.exception.ResponseErrorException;
 import com.kennyc.view.MultiStateView;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
 import rx.Subscriber;
 
-public class MySafeSubscriber<T> extends Subscriber<T> {
+public abstract class MySafeSubscriber<T> extends Subscriber<T> {
     private MultiStateView stateView;
 
     public MySafeSubscriber(MultiStateView stateView) {
@@ -26,11 +26,6 @@ public class MySafeSubscriber<T> extends Subscriber<T> {
         if (stateView != null && stateView.getViewState() != MultiStateView.VIEW_STATE_CONTENT)
             stateView.setViewState(MultiStateView.VIEW_STATE_CONTENT);
         DialogUtil.getIntance().dismiss();
-    }
-
-    @Override
-    public void onNext(T t) {
-
     }
 
     public OnRetryAction getRetryAction() {

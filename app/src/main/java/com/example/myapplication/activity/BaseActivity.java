@@ -5,7 +5,11 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.CallSuper;
+import android.support.annotation.CheckResult;
+import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
@@ -15,14 +19,20 @@ import com.example.myapplication.appconfig.SystemBarTintManager;
 import com.example.myapplication.http.MyService;
 import com.example.myapplication.http.Retrofit.RetrofitFactory;
 import com.example.myapplication.utils.DialogUtil;
-import com.trello.rxlifecycle.components.support.RxAppCompatActivity;
+import com.trello.rxlifecycle.LifecycleProvider;
+import com.trello.rxlifecycle.LifecycleTransformer;
+import com.trello.rxlifecycle.RxLifecycle;
+import com.trello.rxlifecycle.android.ActivityEvent;
+import com.trello.rxlifecycle.android.RxLifecycleAndroid;
 
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import rx.Observable;
 import rx.Subscription;
+import rx.subjects.BehaviorSubject;
 import rx.subscriptions.CompositeSubscription;
 
-public abstract class BaseActivity extends RxAppCompatActivity {
+public abstract class BaseActivity extends AppCompatActivity implements LifecycleProvider<ActivityEvent> {
     protected CompositeSubscription compositeSubscription;
     protected Activity thisActivity;
     public static final String TAG = "okhttp";
@@ -33,6 +43,7 @@ public abstract class BaseActivity extends RxAppCompatActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        lifecycleSubject.onNext(ActivityEvent.CREATE);
         initStatusBar();
         setContentView();
         thisActivity = this;
@@ -85,7 +96,7 @@ public abstract class BaseActivity extends RxAppCompatActivity {
 
 
     protected void initService() {
-        service = RetrofitFactory.createCacheApi(MyService.class);
+        service = RetrofitFactory.createApi(MyService.class);
     }
 
     public abstract int getLayoutID();
@@ -103,6 +114,7 @@ public abstract class BaseActivity extends RxAppCompatActivity {
 
     @Override
     protected void onDestroy() {
+        lifecycleSubject.onNext(ActivityEvent.DESTROY);
         super.onDestroy();
         DialogUtil.getIntance().dismiss();
         if (compositeSubscription != null) {
@@ -110,6 +122,77 @@ public abstract class BaseActivity extends RxAppCompatActivity {
         }
         mBind.unbind();
         thisActivity = null;
+    }
+
+//    @Override
+//    public View onCreateView(String name, Context context, AttributeSet attrs) {
+//        View view = null;
+//        if (name.equals("FrameLayout")) {
+//            view = new AutoFrameLayout(context, attrs);
+//        }
+//
+//        if (name.equals("LinearLayout")) {
+//            view = new AutoLinearLayout(context, attrs);
+//        }
+//
+//        if (name.equals("RelativeLayout")) {
+//            view = new AutoRelativeLayout(context, attrs);
+//        }
+//
+//        if (view != null) return view;
+//
+//        return super.onCreateView(name, context, attrs);
+//    }
+
+    private final BehaviorSubject<ActivityEvent> lifecycleSubject = BehaviorSubject.create();
+
+    @Override
+    @NonNull
+    @CheckResult
+    public final Observable<ActivityEvent> lifecycle() {
+        return lifecycleSubject.asObservable();
+    }
+
+    @Override
+    @NonNull
+    @CheckResult
+    public final <T> LifecycleTransformer<T> bindUntilEvent(@NonNull ActivityEvent event) {
+        return RxLifecycle.bindUntilEvent(lifecycleSubject, event);
+    }
+
+    @Override
+    @NonNull
+    @CheckResult
+    public final <T> LifecycleTransformer<T> bindToLifecycle() {
+        return RxLifecycleAndroid.bindActivity(lifecycleSubject);
+    }
+
+    @Override
+    @CallSuper
+    protected void onStart() {
+        super.onStart();
+        lifecycleSubject.onNext(ActivityEvent.START);
+    }
+
+    @Override
+    @CallSuper
+    protected void onResume() {
+        super.onResume();
+        lifecycleSubject.onNext(ActivityEvent.RESUME);
+    }
+
+    @Override
+    @CallSuper
+    protected void onPause() {
+        lifecycleSubject.onNext(ActivityEvent.PAUSE);
+        super.onPause();
+    }
+
+    @Override
+    @CallSuper
+    protected void onStop() {
+        lifecycleSubject.onNext(ActivityEvent.STOP);
+        super.onStop();
     }
 
 //    @Override

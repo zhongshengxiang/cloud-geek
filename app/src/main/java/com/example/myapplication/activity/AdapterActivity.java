@@ -15,6 +15,7 @@ import com.example.myapplication.R;
 import com.example.myapplication.appconfig.RxTransformerHelper;
 import com.example.myapplication.interfaces.MySafeSubscriber;
 import com.example.myapplication.interfaces.OnRetryAction;
+import com.example.myapplication.utils.DialogUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -85,27 +86,46 @@ public class AdapterActivity extends BaseActivity {
             case R.id.request:
                 break;
             case R.id.empty:
-                Subscription subscribe = service.register("itcasts", "123").compose(RxTransformerHelper.<ResponseBean<ZhuangbiImage>>applySchedulers())
-                        .compose(RxTransformerHelper.<ZhuangbiImage>checkResponse())
-                        .compose(RxTransformerHelper.<ZhuangbiImage>handleTokenOverdue())
-                        .subscribe(new MySafeSubscriber<ZhuangbiImage>() {
-                            @Override
-                            public OnRetryAction getRetryAction() {
-                                return null;
-                            }
-
-                            @Override
-                            public boolean onOtherError(Throwable e) {
-                                return super.onOtherError(e);
-                            }
-                        });
-                addSubscription(subscribe);
+                haha();
                 break;
             case R.id.loading:
-                WebViewActivity.startActivity(thisActivity, "测试", "http://www.baidu.com");
+                WebViewActivity.startActivity(thisActivity, "测试", "http://114.55.27.208:8555/PlatformInfo/Index");
                 break;
             case R.id.net:
                 break;
         }
+    }
+
+    private void haha() {
+        Subscription subscribe = service.register("itcasts", "123")
+                .compose(RxTransformerHelper.<ResponseBean<ZhuangbiImage>>applySchedulers(this))
+                .compose(RxTransformerHelper.<ZhuangbiImage>checkResponse())
+                .subscribe(new MySafeSubscriber<ZhuangbiImage>() {
+                    @Override
+                    public OnRetryAction getRetryAction() {
+                        return new OnRetryAction() {
+                            @Override
+                            public void retry() {
+                                haha();
+                            }
+                        };
+                    }
+
+                    @Override
+                    public void onStart() {
+                        DialogUtil.getIntance().showProgressDialog(thisActivity,null);
+                    }
+
+                    @Override
+                    public void onNext(ZhuangbiImage zhuangbiImage) {
+
+                    }
+
+                    @Override
+                    public boolean onOtherError(Throwable e) {
+                        return super.onOtherError(e);
+                    }
+                });
+        addSubscription(subscribe);
     }
 }

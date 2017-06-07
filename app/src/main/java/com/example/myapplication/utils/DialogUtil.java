@@ -184,9 +184,10 @@ public class DialogUtil {
                     .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
                         @Override
                         public void onClick(SweetAlertDialog sweetAlertDialog) {
-                            if (listener != null)
+                            if (listener != null) {
                                 dismiss();
-                            if (listener != null) listener.onClick(sweetAlertDialog);
+                                listener.onClick(sweetAlertDialog);
+                            }
                         }
                     })
                     .changeAlertType(SweetAlertDialog.SUCCESS_TYPE);

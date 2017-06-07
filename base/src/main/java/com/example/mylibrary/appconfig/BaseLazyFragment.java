@@ -1,9 +1,10 @@
-package com.example.myapplication.fargment;
+package com.example.mylibrary.appconfig;
 
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 
 
-public abstract class BaseLazyFragment extends BaseFragment {
+public abstract class BaseLazyFragment extends Fragment {
     private boolean isPrepared;
 
     @Override

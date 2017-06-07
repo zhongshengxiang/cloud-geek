@@ -20,7 +20,7 @@ public class Toaster {
             toast = Toast.makeText(MyApplication.appContext, msg, duration);
         } else {
             toast.setText(msg);
-            toast.setDuration(Toast.LENGTH_SHORT);
+            toast.setDuration(duration);
         }
         toast.show();
     }

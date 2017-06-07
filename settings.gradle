@@ -1,1 +1,1 @@
-include ':app', ':javapro'
+include ':app', ':javapro', ':rx2', ':base'

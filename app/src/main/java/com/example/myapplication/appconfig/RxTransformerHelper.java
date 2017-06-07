@@ -5,14 +5,18 @@ import android.util.Log;
 
 import com.example.myapplication.Model.ResponseBean;
 import com.example.myapplication.Model.Token;
-import com.example.myapplication.exception.NoNetWorkConnectException;
-import com.example.myapplication.exception.NullListException;
-import com.example.myapplication.exception.ResponseErrorException;
-import com.example.myapplication.exception.TokenOverdueException;
 import com.example.myapplication.http.MyService;
 import com.example.myapplication.http.Retrofit.RetrofitFactory;
 import com.example.myapplication.utils.DialogUtil;
 import com.example.myapplication.utils.NetworkUtils;
+import com.example.mylibrary.exception.NoNetWorkConnectException;
+import com.example.mylibrary.exception.NullListException;
+import com.example.mylibrary.exception.ResponseErrorException;
+import com.example.mylibrary.exception.TokenOverdueException;
+import com.trello.rxlifecycle.LifecycleProvider;
+import com.trello.rxlifecycle.RxLifecycle;
+import com.trello.rxlifecycle.android.ActivityEvent;
+import com.trello.rxlifecycle.components.support.RxAppCompatActivity;
 
 import java.util.List;
 
@@ -25,13 +29,14 @@ import rx.schedulers.Schedulers;
 
 public class RxTransformerHelper {
     //转换线程
-    public static <T> Observable.Transformer<T, T> applySchedulers() {
+    public static <T> Observable.Transformer<T, T> applySchedulers(final LifecycleProvider<ActivityEvent> activity) {
         return new Observable.Transformer<T, T>() {
             @Override
             public Observable<T> call(Observable<T> observable) {
                 return observable.subscribeOn(Schedulers.io())
-                        .unsubscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread());
+//                        .unsubscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .compose(RxLifecycle.<T, ActivityEvent>bindUntilEvent(activity.lifecycle(), ActivityEvent.DESTROY));
             }
         };
     }
@@ -101,7 +106,7 @@ public class RxTransformerHelper {
      * @param <T>
      * @return
      */
-    public static <T> Observable.Transformer<T, T> handleTokenOverdue() {
+    public static <T> Observable.Transformer<T, T> handleTokenOverdue(final RxAppCompatActivity activity) {
         return new Observable.Transformer<T, T>() {
             @Override
             public Observable<T> call(Observable<T> tObservable) {
@@ -115,7 +120,7 @@ public class RxTransformerHelper {
                                     Log.i("okhttp", "handleTokenOverdue()");
                                     //重新获取token
                                     return RetrofitFactory.createApi(MyService.class).getToken()
-                                            .compose(RxTransformerHelper.<ResponseBean<Token>>applySchedulers())
+                                            .compose(RxTransformerHelper.<ResponseBean<Token>>applySchedulers(activity))
                                             .compose(RxTransformerHelper.<Token>checkResponse())
                                             .doOnNext(new Action1<Token>() {
                                                 @Override

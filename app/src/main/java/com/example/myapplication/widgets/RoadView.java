@@ -40,10 +40,11 @@ public class RoadView extends View {
     int offset = 0;
     private Rect src1;
     private Rect dst1;
+    int last;
 
     public void setProgress(int progress) {
         this.offset = progress;
-        postInvalidate();
+        invalidate(last,0,progress,height);
     }
 
     private void init() {
@@ -62,11 +63,11 @@ public class RoadView extends View {
         // dst指的是canvas上的区域
         // src指的是bitmap上的区域
 
-        dst1.set(0, 0, (int) (getWidth() * ((float)offset / 100)), height);
+        dst1.set(0, 0, (int) (getWidth() * ((float) offset / 100)), height);
         src1.set(dst1);
         canvas.drawBitmap(bitmap, src1, dst1, paint);
-        Log.i(BaseActivity.TAG, getWidth() * ((float)offset / 100) + "--");
-
+        Log.i(BaseActivity.TAG, getWidth() * ((float) offset / 100) + "--");
+        last = offset;
         canvas.restore();
 
 

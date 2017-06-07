@@ -1,4 +1,4 @@
-package com.example.myapplication.exception;
+package com.example.mylibrary.exception;
 
 /**
  * Created by Administrator on 2017/2/15.

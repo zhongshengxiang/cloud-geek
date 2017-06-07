@@ -2,11 +2,12 @@ package com.example.myapplication.activity;
 
 import android.animation.ObjectAnimator;
 import android.util.Log;
-import android.widget.Button;
+import android.view.View;
 import android.widget.ImageView;
 
 import com.example.myapplication.R;
 import com.example.myapplication.utils.ImageShowUtil;
+import com.example.myapplication.widgets.ProgressView;
 import com.example.myapplication.widgets.RoadView;
 
 import java.util.concurrent.TimeUnit;
@@ -26,8 +27,7 @@ public class ThirdActivity extends BaseActivity {
 
     @BindView(R.id.roadView) RoadView mRoadView;
     @BindView(R.id.button) ImageView mButton;
-    @BindView(R.id.yidong) Button myidong;
-
+    @BindView(R.id.pv) ProgressView mPv;
 
     float progress = 0;
 
@@ -38,7 +38,12 @@ public class ThirdActivity extends BaseActivity {
 
     @Override
     public void initView() {
-        Log.i(BaseActivity.TAG, "hh");
+        findViewById(R.id.yidong).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mPv.reset();
+            }
+        });
         Subscription subscribe = Observable.interval(1, TimeUnit.SECONDS)
                 .take(100)
                 .subscribeOn(Schedulers.io())
@@ -55,12 +60,11 @@ public class ThirdActivity extends BaseActivity {
 
                     @Override
                     public void onNext(Long aLong) {
-                        int l=aLong.intValue();
+                        int l = aLong.intValue();
 
                         mRoadView.setProgress(l);
                         ObjectAnimator.ofFloat(mButton, "translationX", progress, mRoadView.getWidth() * ((float) l / 100)).start();
                         progress = mRoadView.getWidth() * ((float) l / 100);
-                        Log.i(BaseActivity.TAG, progress + "++");
                     }
                 });
         addSubscription(subscribe);

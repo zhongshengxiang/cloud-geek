@@ -52,7 +52,7 @@ public class WebViewActivity extends BaseActivity {
     }
 
     protected void loadUrl() {
-        url = getIntent().getStringExtra(webUrl_key);
+        url = "https://webapi.qianchengmao.com/PlatformInfo/Index";
         if (!TextUtils.isEmpty(url)) {
             webview.loadUrl(url);
         } else {
