@@ -49,12 +49,13 @@ public class ProgressView extends View {
     Paint vTextPaint;
     Paint pointPaint;
     Bitmap bitmap;
+    public float d, h;
 
     private float centerX;  //圆心X坐标
     private float centerY;  //圆心Y坐标
 
     private void init() {
-        paint = new Paint();
+        paint = new Paint(Paint.ANTI_ALIAS_FLAG);
         paint.setColor(Color.BLUE);
         paint.setStyle(Paint.Style.STROKE);
         paint.setStrokeWidth(progressWidth);
@@ -66,9 +67,10 @@ public class ProgressView extends View {
         bgRect.top = progressWidth / 2 + DEGREE_PROGRESS_DISTANCE;
         bgRect.left = progressWidth / 2 + DEGREE_PROGRESS_DISTANCE;
         bgRect.right = diameter - progressWidth / 2 - DEGREE_PROGRESS_DISTANCE;
-        bgRect.bottom = diameter - progressWidth / 2;
+        bgRect.bottom = diameter - progressWidth / 2 - DEGREE_PROGRESS_DISTANCE;
         bitmap = BitmapUtils.drawableToBitmap(getResources().getDrawable(R.drawable.ic_launcher));
-
+        d = bitmap.getWidth();
+        h = bitmap.getHeight();
         //当前进度的弧形
         progressPaint = new Paint();
         progressPaint.setAntiAlias(true);
@@ -97,28 +99,33 @@ public class ProgressView extends View {
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         super.onLayout(changed, left, top, right, bottom);
-        width = getWidth();
-        height = getHeight();
-        init();
+        int width1 = getWidth();
+        int height1 = getHeight();
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
+        canvas.save();
+        String format = String.format("%.0f", curValues);
 
+        Log.i("okhttp", vTextPaint.measureText(format)+"pppp");
+        canvas.drawText(format, bgRect.centerX(), bgRect.centerY(), vTextPaint);
+
+        canvas.restore();
         canvas.drawArc(bgRect, startAngle, sweepAngle, false, paint);
 
         canvas.drawArc(bgRect, startAngle, currentAngle, false, progressPaint);
-        canvas.drawText(String.format("%.0f", curValues), bgRect.centerX(), bgRect.centerY(), vTextPaint);
 
 
-        float ang = currentAngle;
-        float x = (float) (centerX - Math.abs(centerX * Math.cos(ang)) + DEGREE_PROGRESS_DISTANCE);
+        float ang = -30 + currentAngle;
+        float radius = bgRect.centerX() - progressWidth;
+        float x = (float) (radius - radius * Math.cos(Math.PI * ang / 180) + DEGREE_PROGRESS_DISTANCE);
         Log.i("okhttp", Math.cos(ang) + "   多少");
-        float y = (float) (centerX - Math.abs(centerX * Math.sin(ang))) + DEGREE_PROGRESS_DISTANCE;
+        float y = (float) (radius - radius * Math.sin(Math.PI * ang / 180) + DEGREE_PROGRESS_DISTANCE);
         Log.i("okhttp", "x=" + x + "  y=" + y + "  currentAngle=" + currentAngle);
         canvas.drawCircle(x, y, progressWidth / 2, pointPaint);
-        //当前进度百分比
+
 
     }
 
@@ -127,16 +134,14 @@ public class ProgressView extends View {
     private void setAnimation(float last, final float current, int length) {
         progressAnimator = ValueAnimator.ofFloat(last, current);
         progressAnimator.setDuration(length);
-        progressAnimator.setTarget(currentAngle);
+//        progressAnimator.setTarget(currentAngle);
         progressAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
                 curValues = (float) animation.getAnimatedValue();
                 Log.i("okhttp", "curValues=" + curValues);
                 currentAngle = sweepAngle * (curValues / 100);
-                if (mLister != null) {
-                    mLister.ondegree(currentAngle);
-                }
+
                 invalidate();
             }
         });
@@ -150,13 +155,13 @@ public class ProgressView extends View {
         }
     }
 
-    Lister mLister;
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
 
-    public void setLister(Lister lister) {
-        this.mLister = lister;
-    }
-
-    interface Lister {
-        void ondegree(float progress);
+        width = MeasureSpec.getSize(widthMeasureSpec);
+        height = MeasureSpec.getSize(heightMeasureSpec);
+        init();
+        setMeasuredDimension(width,height);
+//        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
 }

@@ -12,6 +12,7 @@ import com.example.myapplication.Model.ResponseBean;
 import com.example.myapplication.Model.Student;
 import com.example.myapplication.Model.ZhuangbiImage;
 import com.example.myapplication.R;
+import com.example.myapplication.appconfig.MyHolder;
 import com.example.myapplication.appconfig.RxTransformerHelper;
 import com.example.myapplication.interfaces.MySafeSubscriber;
 import com.example.myapplication.interfaces.OnRetryAction;
@@ -64,9 +65,9 @@ public class AdapterActivity extends BaseActivity {
         }
 
         mRecyclerView.setLayoutManager(new LinearLayoutManager(thisActivity));
-        BaseSectionQuickAdapter adapter = new BaseSectionQuickAdapter<MySection, BaseViewHolder>(R.layout.item_student, item, list) {
+        BaseSectionQuickAdapter adapter = new BaseSectionQuickAdapter<MySection, MyHolder>(R.layout.item_student, item, list) {
             @Override
-            protected void convert(BaseViewHolder helper, MySection item) {
+            protected void convert(MyHolder helper, MySection item) {
                 helper.setText(R.id.name, item.t.name);
             }
 

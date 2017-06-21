@@ -1,12 +1,9 @@
 package com.example.myapplication.activity;
 
-import android.animation.ObjectAnimator;
 import android.util.Log;
 import android.view.View;
-import android.widget.ImageView;
 
 import com.example.myapplication.R;
-import com.example.myapplication.utils.ImageShowUtil;
 import com.example.myapplication.widgets.ProgressView;
 import com.example.myapplication.widgets.RoadView;
 
@@ -26,7 +23,7 @@ public class ThirdActivity extends BaseActivity {
 
 
     @BindView(R.id.roadView) RoadView mRoadView;
-    @BindView(R.id.button) ImageView mButton;
+//    @BindView(R.id.button) ImageView mButton;
     @BindView(R.id.pv) ProgressView mPv;
 
     float progress = 0;
@@ -63,12 +60,12 @@ public class ThirdActivity extends BaseActivity {
                         int l = aLong.intValue();
 
                         mRoadView.setProgress(l);
-                        ObjectAnimator.ofFloat(mButton, "translationX", progress, mRoadView.getWidth() * ((float) l / 100)).start();
+//                        ObjectAnimator.ofFloat(mButton, "translationX", progress, mRoadView.getWidth() * ((float) l / 100)).start();
                         progress = mRoadView.getWidth() * ((float) l / 100);
                     }
                 });
         addSubscription(subscribe);
-        ImageShowUtil.showGifImage(thisActivity, mButton, R.drawable.loading);
+//        ImageShowUtil.showGifImage(thisActivity, mButton, R.drawable.loading);
 
     }
 

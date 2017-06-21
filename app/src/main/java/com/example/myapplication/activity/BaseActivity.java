@@ -47,7 +47,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Lifecycl
         initStatusBar();
         setContentView();
         thisActivity = this;
-        mBind = ButterKnife.bind(this);
+        mBind = ButterKnife.bind(thisActivity);
         initService();
         initView();
     }

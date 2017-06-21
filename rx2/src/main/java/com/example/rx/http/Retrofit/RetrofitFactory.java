@@ -23,29 +23,50 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RetrofitFactory {
 
-    private static Retrofit singleton;
+    private static WebApiInterface mWebApi;
     private static Retrofit cacheLeton;
 
-    public static <T> T createApi(Class<T> clazz) {
-        if (singleton == null) {
-            synchronized (RetrofitFactory.class) {
-                OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
-                if (Constants.isDebug) {
-                    HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
-                    logging.setLevel(HttpLoggingInterceptor.Level.BODY);
-                    httpClient.addInterceptor(logging);
-                }
-                Builder builder = new Builder();
-                httpClient.connectTimeout(Constants.networkTimeout, TimeUnit.SECONDS);
-                singleton = builder.baseUrl("http://www.52doubao.cn/")
-                        .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-                        .addConverterFactory(ScalarsConverterFactory.create())
-                        .addConverterFactory(GsonConverterFactory.create())
-                        .client(httpClient.build()).build();
-            }
-        }
-        return singleton.create(clazz);
+    public static WebApiInterface getmWebApi() {
+        return mWebApi;
     }
+
+    static {
+        OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
+        if (Constants.isDebug) {
+            HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
+            logging.setLevel(HttpLoggingInterceptor.Level.BODY);
+            httpClient.addInterceptor(logging);
+        }
+        Builder builder = new Builder();
+        httpClient.connectTimeout(Constants.networkTimeout, TimeUnit.SECONDS);
+        Retrofit singleton = builder.baseUrl("http://test.52doubao.cn/")
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                .addConverterFactory(ScalarsConverterFactory.create())
+                .addConverterFactory(GsonConverterFactory.create())
+                .client(httpClient.build()).build();
+        mWebApi = singleton.create(WebApiInterface.class);
+    }
+
+//    public static <T> T createApi(Class<T> clazz) {
+//        if (singleton == null) {
+//            synchronized (RetrofitFactory.class) {
+//                OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
+//                if (Constants.isDebug) {
+//                    HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
+//                    logging.setLevel(HttpLoggingInterceptor.Level.BODY);
+//                    httpClient.addInterceptor(logging);
+//                }
+//                Builder builder = new Builder();
+//                httpClient.connectTimeout(Constants.networkTimeout, TimeUnit.SECONDS);
+//                singleton = builder.baseUrl("http://www.52doubao.cn/")
+//                        .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+//                        .addConverterFactory(ScalarsConverterFactory.create())
+//                        .addConverterFactory(GsonConverterFactory.create())
+//                        .client(httpClient.build()).build();
+//            }
+//        }
+//        return singleton.create(clazz);
+//    }
 
     /**
      * 带缓存的

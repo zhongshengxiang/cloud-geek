@@ -16,7 +16,6 @@ import android.view.Window;
 import android.view.WindowManager;
 
 import com.example.mylibrary.utils.DialogUtil;
-import com.example.rx.http.Retrofit.RetrofitFactory;
 import com.example.rx.http.Retrofit.WebApiInterface;
 import com.trello.rxlifecycle2.LifecycleProvider;
 import com.trello.rxlifecycle2.LifecycleTransformer;
@@ -45,7 +44,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Lifecycl
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         lifecycleSubject.onNext(ActivityEvent.CREATE);
-        setContentView();
+        setContentView(getLayoutID());
         thisActivity = this;
         mBind = ButterKnife.bind(this);
         initService();
@@ -66,12 +65,8 @@ public abstract class BaseActivity extends AppCompatActivity implements Lifecycl
         win.setAttributes(winParams);
     }
 
-    protected void setContentView() {
-        setContentView(getLayoutID());
-    }
 
-
-    protected void log(String msg) {
+    protected void logger(String msg) {
         Log.i(TAG, msg);
     }
 
@@ -83,7 +78,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Lifecycl
 
 
     protected void initService() {
-        mWebApi = RetrofitFactory.createApi(WebApiInterface.class);
+//        mWebApi = RetrofitFactory.createApi(WebApiInterface.class);
     }
 
     public abstract int getLayoutID();
