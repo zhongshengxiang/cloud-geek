@@ -1,16 +1,25 @@
 package com.example.rx.ui;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.Rect;
+import android.graphics.RectF;
+import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.SearchView;
 
 import com.example.rx.R;
 import com.example.rx.appconfig.MyHandlerSubscriber;
 import com.example.rx.appconfig.RxTransformerHelper;
-import com.example.rx.http.Retrofit.RetrofitFactory;
 import com.example.rx.model.HomeBean;
 import com.example.rx.model.ResponseBean;
 import com.example.rx.utils.Toaster;
@@ -22,6 +31,7 @@ import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+import cn.finalteam.toolsfinal.BitmapUtils;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Function;
@@ -31,6 +41,7 @@ public class MainActivity extends BaseActivity {
 
     @BindView(R.id.et) EditText mEt;
     @BindView(R.id.add) Button mAdd;
+    @BindView(R.id.iv) ImageView mIv;
     @BindView(R.id.search_bar) SearchView mSearchBar;
 
 
@@ -42,10 +53,13 @@ public class MainActivity extends BaseActivity {
     @Override
     public void initView() {
         init();
+        Bitmap bitmap = BitmapUtils.drawableToBitmap(ContextCompat.getDrawable(thisActivity, R.mipmap.student_icon));
+        Bitmap bitmap1 = GetRoundedCornerBitmap(bitmap);
+        mIv.setImageBitmap(bitmap1);
         mAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                RetrofitFactory.getmWebApi().searchSth(mEt.getText().toString().trim())
+                mWebApi.searchSth(mEt.getText().toString().trim())
                         .compose(RxTransformerHelper.<ResponseBean<HomeBean>>applySchedulers(MainActivity.this))
                         .compose(RxTransformerHelper.<HomeBean>checkResponse())
                         .map(new Function<HomeBean, List<HomeBean.ItemHomeBean>>() {
@@ -78,8 +92,7 @@ public class MainActivity extends BaseActivity {
                 }).switchMap(new Function<SearchViewQueryTextEvent, Observable<ResponseBean<HomeBean>>>() {
             @Override
             public Observable<ResponseBean<HomeBean>> apply(SearchViewQueryTextEvent event) throws Exception {
-
-                return RetrofitFactory.getmWebApi().searchSth(event.queryText().toString().trim());
+                return mWebApi.searchSth(event.queryText().toString().trim());
             }
         })
                 .compose(RxTransformerHelper.<ResponseBean<HomeBean>>applySchedulers(this))
@@ -98,7 +111,7 @@ public class MainActivity extends BaseActivity {
 
                     @Override
                     public boolean onOtherError(Throwable e) {
-//                        init();
+                        init();
                         return false;
                     }
                 });
@@ -128,6 +141,35 @@ public class MainActivity extends BaseActivity {
                 Intent intent5 = new Intent(thisActivity, VLayoutActivity.class);
                 startActivity(intent5);
                 break;
+        }
+    }
+    public static Bitmap GetRoundedCornerBitmap(Bitmap bitmap) {
+        try {
+            Bitmap output = Bitmap.createBitmap(bitmap.getWidth(),
+                    bitmap.getHeight(), Bitmap.Config.ARGB_8888);
+            Canvas canvas = new Canvas(output);
+            final Paint paint = new Paint();
+            final Rect rect = new Rect(0, 0, bitmap.getWidth(),
+                    bitmap.getHeight());
+            final Rect rect2 = new Rect(0, 0, bitmap.getWidth(),
+                    bitmap.getHeight()/2);
+            final RectF rectF = new RectF(new Rect(0, 0, bitmap.getWidth(),
+                    bitmap.getHeight()));
+            final float roundPx = 14;
+            paint.setAntiAlias(true);
+            canvas.drawARGB(0, 0, 0, 0);
+            paint.setColor(Color.BLACK);
+            canvas.drawRoundRect(rectF, roundPx, roundPx, paint);
+            paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
+            final Rect src = new Rect(0, 0, bitmap.getWidth(),
+                    bitmap.getHeight());
+            final Rect src2 = new Rect(0, 0, bitmap.getWidth(),
+                    bitmap.getHeight()/2);
+            canvas.drawBitmap(bitmap, src, rect, paint);
+            canvas.drawBitmap(bitmap,src2,rect2,paint);
+            return output;
+        } catch (Exception e) {
+            return bitmap;
         }
     }
 }
